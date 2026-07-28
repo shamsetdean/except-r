@@ -73,21 +73,58 @@ function stopPolling() {
 }
 
 // ---------------------------------------------------------------------------
-// Authentification (lien magique par e-mail)
+// Authentification (e-mail + mot de passe)
 // ---------------------------------------------------------------------------
+const authTitle = document.getElementById("auth-title");
+const authSubmitButton = document.getElementById("auth-submit-button");
+const authToggleButton = document.getElementById("auth-toggle-mode");
+const authPasswordInput = document.getElementById("auth-password");
+
+const authSubmitLabel = document.getElementById("auth-submit-label");
+let authMode = "login"; // "login" | "signup"
+
+authToggleButton.addEventListener("click", () => {
+  authMode = authMode === "login" ? "signup" : "login";
+  authBanner.innerHTML = "";
+  if (authMode === "signup") {
+    authTitle.textContent = "Créer un compte";
+    authSubmitLabel.textContent = "Créer mon compte";
+    authToggleButton.textContent = "Déjà un compte ? Se connecter";
+    authPasswordInput.autocomplete = "new-password";
+  } else {
+    authTitle.textContent = "Connexion";
+    authSubmitLabel.textContent = "Se connecter";
+    authToggleButton.textContent = "Pas encore de compte ? Créer un compte";
+    authPasswordInput.autocomplete = "current-password";
+  }
+});
+
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("auth-email").value.trim();
-  if (!email) return;
+  const password = authPasswordInput.value;
+  if (!email || !password) return;
 
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: new URL(".", window.location.href).toString() },
-  });
+  authSubmitButton.disabled = true;
 
-  authBanner.innerHTML = error
-    ? banner("error", `Échec de l'envoi : ${error.message}`)
-    : banner("info", "Lien de connexion envoyé — vérifie ta boîte mail.");
+  if (authMode === "signup") {
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+      authBanner.innerHTML = banner("error", error.message);
+    } else {
+      authBanner.innerHTML = banner(
+        "info",
+        "Compte créé. Si une confirmation par e-mail est requise, vérifie ta boîte mail ; sinon tu es déjà connecté.",
+      );
+    }
+  } else {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      authBanner.innerHTML = banner("error", "Identifiants incorrects.");
+    }
+  }
+
+  authSubmitButton.disabled = false;
 });
 
 logoutButton.addEventListener("click", async () => {
