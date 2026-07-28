@@ -6,7 +6,7 @@ import { lancerTraitementSeance, listerSeances, ecouterSeances, sonderAvancement
 // ---------------------------------------------------------------------------
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js").catch((err) => {
+    navigator.serviceWorker.register("service-worker.js").catch((err) => {
       console.error("Échec de l'enregistrement du service worker :", err);
     });
   });
