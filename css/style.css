@@ -284,6 +284,22 @@ button {
 .badge--done { background: rgba(111, 191, 115, 0.16); color: var(--success); }
 .badge--error { background: rgba(226, 99, 90, 0.16); color: var(--danger); }
 
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.badge__spinner {
+  animation: spin 0.9s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .empty-state {
   text-align: center;
   color: var(--ink-dim);
