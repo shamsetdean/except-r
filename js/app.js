@@ -1,5 +1,6 @@
 import { supabase } from "./supabase-init.js";
-import { lancerTraitementSeance, listerSeances, ecouterSeances, sonderAvancementSeances } from "./gladia-upload.js";
+import { lancerTraitementSeance, listerSeances, ecouterSeances, sonderAvancementSeances, recupererSeanceComplete } from "./gladia-upload.js";
+import { renderCompteRendu, tempsEcoule } from "./compte-rendu.js";
 
 // ---------------------------------------------------------------------------
 // Service Worker
@@ -44,6 +45,10 @@ const submitButton = document.getElementById("submit-button");
 const recordButton = document.getElementById("record-button");
 const recordTimer = document.getElementById("record-timer");
 const seanceListEl = document.getElementById("seance-list");
+const detailScreen = document.getElementById("detail-screen");
+const detailContent = document.getElementById("detail-content");
+const detailBackButton = document.getElementById("detail-back-button");
+const detailPrintButton = document.getElementById("detail-print-button");
 
 let selectedAudio = null; // { blob, extension, label }
 let participants = [];
@@ -101,6 +106,7 @@ supabase.auth.onAuthStateChange((_event, session) => {
 function showAuthScreen() {
   authScreen.hidden = false;
   appScreen.hidden = true;
+  detailScreen.hidden = true;
   if (unsubscribeSeances) unsubscribeSeances();
   stopPolling();
 }
@@ -340,17 +346,49 @@ function renderSeanceList(seances) {
         dateStyle: "medium",
         timeStyle: "short",
       });
+      const isClickable = s.status === "done";
+      const subtitle =
+        s.status === "processing" || s.status === "creating"
+          ? tempsEcoule(s.created_at)
+          : date;
+
       return `
-        <li class="seance-item">
+        <li class="seance-item ${isClickable ? "seance-item--clickable" : ""}" data-id="${s.id}" data-status="${s.status}">
           <div>
             <div class="seance-item__title">${escapeHtml(s.meeting_title)}</div>
-            <div class="seance-item__date">${date}</div>
+            <div class="seance-item__elapsed">${escapeHtml(subtitle)}</div>
           </div>
           <span class="badge badge--${s.status}">${statusLabel(s.status)}</span>
         </li>`;
     })
     .join("");
+
+  seanceListEl.querySelectorAll(".seance-item--clickable").forEach((li) => {
+    li.addEventListener("click", () => openDetail(li.dataset.id));
+  });
 }
+
+async function openDetail(id) {
+  try {
+    const job = await recupererSeanceComplete(id);
+    detailContent.innerHTML = renderCompteRendu(job);
+    appScreen.hidden = true;
+    detailScreen.hidden = false;
+    window.scrollTo(0, 0);
+  } catch (err) {
+    appBanner.innerHTML = banner("error", err.message);
+    console.error(err);
+  }
+}
+
+detailBackButton.addEventListener("click", () => {
+  detailScreen.hidden = true;
+  appScreen.hidden = false;
+});
+
+detailPrintButton.addEventListener("click", () => {
+  window.print();
+});
 
 function statusLabel(status) {
   return (

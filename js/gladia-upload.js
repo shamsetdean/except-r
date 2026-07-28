@@ -71,6 +71,18 @@ export async function listerSeances() {
   return data;
 }
 
+/** Récupère le détail complet d'une séance (avec le résultat Gladia). */
+export async function recupererSeanceComplete(id) {
+  const { data, error } = await supabase
+    .from("exceptor_jobs")
+    .select("id, meeting_title, status, created_at, participants, agenda_provided, result, error")
+    .eq("id", id)
+    .single();
+
+  if (error) throw new Error(`Impossible de récupérer la séance : ${error.message}`);
+  return data;
+}
+
 /** S'abonne aux changements de statut en temps réel (insert + update). */
 export function ecouterSeances(onChange) {
   const channel = supabase
