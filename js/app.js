@@ -1,5 +1,5 @@
 import { supabase } from "./supabase-init.js";
-import { lancerTraitementSeance, listerSeances, ecouterSeances } from "./gladia-upload.js";
+import { lancerTraitementSeance, listerSeances, ecouterSeances, sonderAvancementSeances } from "./gladia-upload.js";
 
 // ---------------------------------------------------------------------------
 // Service Worker
@@ -48,6 +48,24 @@ const seanceListEl = document.getElementById("seance-list");
 let selectedAudio = null; // { blob, extension, label }
 let participants = [];
 let unsubscribeSeances = null;
+let pollInterval = null;
+
+const POLL_INTERVAL_MS = 15000; // 15s
+
+function startPolling() {
+  if (pollInterval) return;
+  pollInterval = setInterval(async () => {
+    await sonderAvancementSeances();
+    refreshSeanceList();
+  }, POLL_INTERVAL_MS);
+}
+
+function stopPolling() {
+  if (pollInterval) {
+    clearInterval(pollInterval);
+    pollInterval = null;
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Authentification (lien magique par e-mail)
@@ -84,6 +102,7 @@ function showAuthScreen() {
   authScreen.hidden = false;
   appScreen.hidden = true;
   if (unsubscribeSeances) unsubscribeSeances();
+  stopPolling();
 }
 
 function showAppScreen() {
@@ -92,6 +111,7 @@ function showAppScreen() {
   refreshSeanceList();
   if (unsubscribeSeances) unsubscribeSeances();
   unsubscribeSeances = ecouterSeances(refreshSeanceList);
+  startPolling();
 }
 
 // Vérifie la session au chargement
