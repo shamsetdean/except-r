@@ -84,3 +84,17 @@ export function ecouterSeances(onChange) {
 
   return () => supabase.removeChannel(channel);
 }
+
+/**
+ * Demande à la fonction gladia-poll de vérifier l'avancement des séances en
+ * cours (remplace le webhook, indisponible en formule gratuite Gladia).
+ * N'importe pas d'erreur bloquante : un échec de sondage n'est pas critique,
+ * on réessaiera au prochain appel.
+ */
+export async function sonderAvancementSeances() {
+  try {
+    await supabase.functions.invoke("gladia-poll", { body: {} });
+  } catch (err) {
+    console.warn("Échec du sondage d'avancement :", err);
+  }
+}
