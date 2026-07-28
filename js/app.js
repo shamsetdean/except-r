@@ -77,7 +77,7 @@ authForm.addEventListener("submit", async (e) => {
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: window.location.origin },
+    options: { emailRedirectTo: new URL(".", window.location.href).toString() },
   });
 
   authBanner.innerHTML = error
