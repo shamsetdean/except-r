@@ -358,7 +358,7 @@ function renderSeanceList(seances) {
             <div class="seance-item__title">${escapeHtml(s.meeting_title)}</div>
             <div class="seance-item__elapsed">${escapeHtml(subtitle)}</div>
           </div>
-          <span class="badge badge--${s.status}">${statusLabel(s.status)}</span>
+          <span class="badge badge--${s.status}">${badgeContent(s.status)}</span>
         </li>`;
     })
     .join("");
@@ -399,6 +399,16 @@ function statusLabel(status) {
       error: "échec",
     }[status] ?? status
   );
+}
+
+const SPINNER_SVG = `
+  <svg class="badge__spinner" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+    <path d="M12 2a10 10 0 0 1 10 10"></path>
+  </svg>`;
+
+function badgeContent(status) {
+  const isWorking = status === "creating" || status === "processing";
+  return `${isWorking ? SPINNER_SVG : ""}<span>${statusLabel(status)}</span>`;
 }
 
 // ---------------------------------------------------------------------------
