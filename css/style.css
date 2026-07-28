@@ -329,3 +329,132 @@ button {
   border: none;
   border-radius: 8px;
 }
+
+/* --- Détail / compte rendu --- */
+
+.detail-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.compte-rendu {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+}
+
+.compte-rendu__badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--warning);
+  background: rgba(217, 164, 65, 0.14);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+.compte-rendu h1 {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.compte-rendu__meta {
+  color: var(--ink-dim);
+  font-size: 0.85rem;
+  margin-bottom: 24px;
+}
+
+.compte-rendu section {
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border);
+  padding: 18px 0;
+  margin: 0;
+}
+
+.compte-rendu section:first-of-type { border-top: none; }
+
+.compte-rendu h2 {
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+}
+
+.compte-rendu ul, .compte-rendu ol {
+  margin: 0;
+  padding-left: 22px;
+}
+.compte-rendu li { margin-bottom: 6px; }
+.compte-rendu p { margin: 0 0 10px; }
+
+.compte-rendu table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.compte-rendu th, .compte-rendu td {
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  text-align: left;
+}
+.compte-rendu th { background: rgba(201, 160, 102, 0.08); }
+
+.compte-rendu__empty {
+  color: var(--ink-dim);
+  font-style: italic;
+}
+
+.transcript p {
+  margin-bottom: 10px;
+  font-size: 0.92rem;
+}
+.transcript__speaker {
+  font-weight: 700;
+  color: var(--accent);
+  margin-right: 6px;
+}
+
+.compte-rendu__footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.72rem;
+  color: var(--ink-dim);
+}
+
+.seance-item {
+  cursor: default;
+}
+.seance-item.seance-item--clickable {
+  cursor: pointer;
+}
+.seance-item.seance-item--clickable:hover .seance-item__title {
+  color: var(--accent);
+}
+
+.seance-item__elapsed {
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+}
+
+@media print {
+  .topbar, .detail-toolbar, #new-seance, #seance-history, #logout-button {
+    display: none !important;
+  }
+  body, #app-screen, main {
+    background: #fff;
+    color: #000;
+  }
+  .compte-rendu {
+    border: none;
+    padding: 0;
+  }
+  .compte-rendu__badge {
+    color: #000;
+    background: none;
+    border: 1px solid #000;
+  }
+}
