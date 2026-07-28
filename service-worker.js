@@ -8,14 +8,18 @@
 const CACHE_VERSION = "exceptor-shell-v1";
 
 const APP_SHELL_FILES = [
-  "/",
-  "/index.html",
-  "/offline.html",
-  "/manifest.webmanifest",
-  "/css/style.css",
-  "/js/app.js",
-  "/js/gladia-upload.js",
-  "/js/supabase-init.js",
+  "./",
+  "index.html",
+  "offline.html",
+  "manifest.webmanifest",
+  "css/style.css",
+  "js/app.js",
+  "js/gladia-upload.js",
+  "js/supabase-init.js",
+  "icons/icon-192.png",
+  "icons/icon-512.png",
+  "icons/apple-touch-icon.png",
+  "icons/favicon-48.png",
 ];
 
 self.addEventListener("install", (event) => {
@@ -63,7 +67,7 @@ self.addEventListener("fetch", (event) => {
       fetch(event.request).catch(
         () =>
           caches.match(event.request).then((cached) => cached) ||
-          caches.match("/offline.html"),
+          caches.match("offline.html"),
       ),
     );
     return;
@@ -73,7 +77,7 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
-      return fetch(event.request).catch(() => caches.match("/offline.html"));
+      return fetch(event.request).catch(() => caches.match("offline.html"));
     }),
   );
 });
